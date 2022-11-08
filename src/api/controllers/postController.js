@@ -33,6 +33,9 @@ exports.createAPost = (req, res) => {
 exports.getAPost = async (req, res) => {
     try {
         const result = await Post.findById({_id: req.params.post_id}).exec();
+        if (result == null) {
+            return res.status(400).send();    
+        }
         return res.json(result);
     } catch (error) {
         return res.status(400).send("Erreur")
