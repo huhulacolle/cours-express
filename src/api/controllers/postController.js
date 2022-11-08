@@ -1,4 +1,5 @@
 const Post = require('../models/postModel');
+const axios = require('axios');
 
 exports.listAllPosts = (req, res) => {
     Post.find({}, (error, posts) => {
@@ -14,20 +15,26 @@ exports.listAllPosts = (req, res) => {
     })
 }
 
-exports.createAPost = (req, res) => {
-    let newPost = new Post(req.body);
+exports.createAPost = async (req, res) => {
+    if (req.body.content != null) {
+        let newPost = new Post(req.body);
 
-    newPost.save((error, post) => {
-        if (error) {
-            res.status(401);
-            console.log(error);
-            res.json({ message: "Reqûete invalide." });
-        }
-        else {
-            res.status(201);
-            res.json(post);
-        }
-    })
+        newPost.save((error, post) => {
+            if (error) {
+                res.status(401);
+                console.log(error);
+                res.json({ message: "Reqûete invalide." });
+            }
+            else {
+                res.status(201);
+                res.json(post);
+            }
+        })
+    }
+    else {
+        const loremipsu = await axios.get("https://loripsum.net/api/plaintext");
+        res.send(loremipsu.data);
+    }
 }
 
 exports.getAPost = (req, res) => {

@@ -7,7 +7,8 @@ const server = express();
 
 const mongoose = require("mongoose");
 // mongoose.connect("mongodb://localhost:27017/apinode"); // Whithout Docker
-mongoose.connect("mongodb://mongo/apinode");
+// mongoose.connect("mongodb://mongo/apinode");
+mongoose.connect("mongodb://localhost:27017");
 
 server.use(express.urlencoded());
 server.use(express.json());
