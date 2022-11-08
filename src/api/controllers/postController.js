@@ -16,25 +16,23 @@ exports.listAllPosts = (req, res) => {
 }
 
 exports.createAPost = async (req, res) => {
-    if (req.body.content != null) {
-        let newPost = new Post(req.body);
-
-        newPost.save((error, post) => {
-            if (error) {
-                res.status(401);
-                console.log(error);
-                res.json({ message: "Reqûete invalide." });
-            }
-            else {
-                res.status(201);
-                res.json(post);
-            }
-        })
+    let body = req.body;
+    if (body.content == undefined) {
+        loremipsu = await axios.get("https://loripsum.net/api/plaintext");
+        body.content = loremipsu.data;
     }
-    else {
-        const loremipsu = await axios.get("https://loripsum.net/api/plaintext");
-        res.send(loremipsu.data);
-    }
+    let newPost = new Post(body);
+    newPost.save((error, post) => {
+        if (error) {
+            res.status(401);
+            console.log(error);
+            res.json({ message: "Reqûete invalide." });
+        }
+        else {
+            res.status(201);
+            res.json(post);
+        }
+    })
 }
 
 exports.getAPost = (req, res) => {
@@ -76,7 +74,7 @@ exports.deleteApost = (req, res) => {
         }
         else {
             res.status(200);
-            res.json({message: "Article supprimé"});
+            res.json({ message: "Article supprimé" });
         }
 
     })
