@@ -18,7 +18,7 @@ exports.listAllPosts = (req, res) => {
 exports.createAPost = async (req, res) => {
     let body = req.body;
     if (body.content == undefined || body.content == null || body.content == "") {
-        loremipsu = await axios.get("https://loripsum.net/api/plaintext");
+        let loremipsu = await axios.get("https://loripsum.net/api/plaintext");
         body.content = loremipsu.data;
     }
     let newPost = new Post(body);
