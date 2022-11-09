@@ -1,5 +1,5 @@
 const Post = require('../models/postModel');
-const axios = require('axios');
+const textApiProvider = require("../providers/textApiProvider");
 
 exports.listAllPosts = (req, res) => {
     Post.find({}, (error, posts) => {
@@ -15,24 +15,31 @@ exports.listAllPosts = (req, res) => {
     })
 }
 
-exports.createAPost = async (req, res) => {
-    let body = req.body;
-    if (body.content == undefined || body.content == null || body.content == "") {
-        let loremipsu = await axios.get("https://loripsum.net/api/plaintext");
-        body.content = loremipsu.data;
-    }
-    let newPost = new Post(body);
-    newPost.save((error, post) => {
-        if (error) {
-            res.status(401);
-            console.log(error);
-            res.json({ message: "Reqûete invalide." });
+exports.createAPost = (req, res) => {
+    let newPost = new Post(req.body);
+
+
+    let randomTextPromise = textApiProvider.getRandomText();
+    
+    randomTextPromise.then((response) => {
+        if(!newPost.content){
+            newPost.content = response;
         }
-        else {
-            res.status(201);
-            res.json(post);
-        }
+
+        newPost.save((error, post) => {
+            if (error) {
+                res.status(401);
+                console.log(error);
+                res.json({ message: "Reqûete invalide." });
+            }
+            else {
+                res.status(201);
+                res.json(post);
+            }
+        })
+
     })
+
 }
 
 exports.getAPost = (req, res) => {
@@ -74,7 +81,7 @@ exports.deleteApost = (req, res) => {
         }
         else {
             res.status(200);
-            res.json({ message: "Article supprimé" });
+            res.json({message: "Article supprimé"});
         }
 
     })
